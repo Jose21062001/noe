@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Control de Operaciones Pro - Ing. José Córdova</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0; padding: 20px; background-color: #f4f7f6; color: #333;
+    }
+    .container {
+      max-width: 1200px; margin: 0 auto; background: #fff; padding: 20px;
+      border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .login-container {
+      max-width: 400px; margin: 100px auto; background: #fff; padding: 40px;
+      border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center;
+    }
+    .login-container h2 { color: #0056b3; margin-bottom: 30px; }
+    .login-container input {
+      width: 100%; padding: 12px; margin-bottom: 20px;
+      border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box;
+    }
+    .login-container button {
+      width: 100%; padding: 12px; background-color: #007bff; color: white;
+      border: none; border-radius: 4px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .menu-container {
+      max-width: 900px; margin: 50px auto; background: #fff; padding: 40px;
+      border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .menu-container h1 { color: #0056b3; margin-top: 0; text-align: center; }
+    .menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-top: 30px; }
+    .menu-btn {
+      padding: 25px; font-size: 1.1rem; font-weight: 600;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; border: none; border-radius: 12px; cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .menu-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+    .menu-btn.dashboard { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+    .menu-btn.mant { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .menu-btn.loan { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .menu-btn.plant { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .menu-btn.alerts { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
+    
+    .logout-btn {
+      float: right; padding: 8px 15px; background-color: #6c757d; color: white;
+      border: none; border-radius: 4px; cursor: pointer; font-size: 0.9rem;
+    }
+    form {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px; margin-bottom: 20px; padding: 20px;
+      border: 1px solid #ddd; border-radius: 8px;
+    }
+    form div { display: flex; flex-direction: column; }
+    label { margin-bottom: 5px; font-weight: 600; }
+    input, select, textarea { padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; }
+    textarea { resize: vertical; min-height: 60px; }
+    .form-actions { grid-column: 1 / -1; text-align: right; }
+    button.primary { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+    button.secondary { background-color: #6c757d; color: white; margin-right: 10px; padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; }
+    button.edit { background-color: #ffc107; color: #333; margin-right: 5px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    button.delete { background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    button.report { background-color: #17a2b8; color: white; margin-right: 5px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    button.whatsapp { background-color: #25D366; color: white; margin-right: 5px; padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.9rem; }
+    th, td { border: 1px solid #ddd; padding: 10px; text-align: left; vertical-align: top; }
+    th { background-color: #f2f2f2; font-weight: 700; }
+    .accessory-grid { grid-column: 1 / -1; border: 1px solid #ccc; border-radius: 4px; padding: 15px; }
+    .accessory-grid-items { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+    .acc-item { display: flex; gap: 10px; align-items: center; }
+    .header-info-equipo {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .signature-container { margin-top: 40px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .profile-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #555; font-weight: 600; }
+    .profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff; }
+    .stats-summary { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .stat-pill { 
+      background: #fff; padding: 15px 20px; border-radius: 12px; font-size: 0.9rem; 
+      font-weight: bold; border: 2px solid #eee; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.2s; cursor: pointer;
+    }
+    .stat-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+    
+    .alert-badge {
+      background: #dc3545; color: white; border-radius: 50%;
+      width: 24px; height: 24px; display: inline-flex; align-items: center;
+      justify-content: center; font-size: 0.75rem; font-weight: bold;
+      margin-left: 10px; animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    
+    .chart-container { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .chart-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 15px; color: #333; }
+    
+    .signature-pad {
+      border: 2px solid #ddd; border-radius: 4px; cursor: crosshair;
+      background: white; touch-action: none;
+    }
+    .signature-controls { margin-top: 10px; display: flex; gap: 10px; }
+    
+    .modal {
+      display: none; position: fixed; z-index: 1000; left: 0; top: 0;
+      width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);
+    }
+    .modal-content {
+      background-color: #fefefe; margin: 5% auto; padding: 30px;
+      border-radius: 8px; width: 90%; max-width: 600px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+    .close:hover { color: #000; }
+  </style>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <div class="login-container" id="login-screen">
+    <h2>Control de Operaciones</h2>
+    <form id="login-form" style="display:block; border:none; padding:0; box-shadow:none;">
+      <input type="email" id="email-input" placeholder="Correo electrónico" required>
+      <input type="password" id="password-input" placeholder="Contraseña" required>
+      <button type="submit" id="login-btn">Ingresar</button>
+      <p id="error-message" style="color:red; display:none; margin-top:10px;">❌ Datos incorrectos</p>
+    </form>
+  </div>
+
+  <div class="menu-container" id="main-menu" style="display: none;">
+    <h1>Panel de Control</h1>
+    <p style="text-align: center; color: #666; margin-bottom: 30px;">Cuenta:<span id="user-email" style="font-weight: bold;"></span></p>
+    
+    <div style="margin: 20px 0;">
+      <input type="search" id="main-search" placeholder="🔍 Buscar por código o cliente..." 
+             style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 1rem; box-sizing: border-box;">
+    </div>
+    
+    <div id="search-results" style="display: none; background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px; max-height: 400px; overflow-y: auto;">
+      <h3 style="margin-top: 0;">Resultados de búsqueda:</h3>
+      <div id="results-container"></div>
+    </div>
+    
+    <div class="menu-grid">
+      <button class="menu-btn dashboard" onclick="showDashboard()">📊 Dashboard</button>
+      <button class="menu-btn mant" onclick="showMaintenance()">🔧 Mantenimiento</button>
+      <button class="menu-btn loan" onclick="showLoans()">📦 Gestión Dispensadores</button>
+      <button class="menu-btn plant" onclick="showPlant()">🏭 Planta</button>
+      <button class="menu-btn alerts" onclick="showAlerts()">🔔 Alertas<span id="alert-count" class="alert-badge" style="display:none;">0</span></button>
+    </div>
+    
+    <button class="logout-btn" onclick="logout()" style="float:none; margin-top:30px; width: 100%;">Cerrar Sesión</button>
+    
+    <div class="signature-container">
+      <a href="https://www.linkedin.com/in/jose-marcelo-cordova-garcia-759847191?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="profile-link">
+        <img src="https://i.ibb.co/5Wn2vmD1/Whats-App-Image-2025-12-28-at-10-08-57.jpg" alt="Ing. José Córdova" class="profile-pic">
+        <span>Diseñado por Ing. José Córdova</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard-app" style="display: none;">
+    <div class="container">
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      <button class="secondary" onclick="showMenu()" style="float:left;">↩️ Menú</button>
+      <h1 style="clear:both; padding-top:20px;">📊 Dashboard</h1>
+      
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
+        <div class="stat-pill" style="border-left: 5px solid #007bff;">
+          <div style="font-size: 1.5rem; color: #007bff;">📦</div>
+          <div style="font-size: 0.75rem; color: #666;">Total Mantenimientos</div>
+          <div style="font-size: 1.3rem; margin-top: 3px;" id="dash-total-mant">0</div>
+        </div>
+        <div class="stat-pill" style="border-left: 5px solid #ffc107;">
+          <div style="font-size: 1.5rem; color: #ffc107;">⏳</div>
+          <div style="font-size: 0.75rem; color: #666;">Pendientes</div>
+          <div style="font-size: 1.3rem; margin-top: 3px;" id="dash-pendientes">0</div>
+        </div>
+        <div class="stat-pill" style="border-left: 5px solid #28a745;">
+          <div style="font-size: 1.5rem; color: #28a745;">✅</div>
+          <div style="font-size: 0.75rem; color: #666;">Completados</div>
+          <div style="font-size: 1.3rem; margin-top: 3px;" id="dash-completados">0</div>
+        </div>
+        <div class="stat-pill" style="border-left: 5px solid #17a2b8;">
+          <div style="font-size: 1.5rem; color: #17a2b8;">🔄</div>
+          <div style="font-size: 0.75rem; color: #666;">Préstamos Activos</div>
+          <div style="font-size: 1.3rem; margin-top: 3px;" id="dash-prestamos">0</div>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+        <div class="chart-container">
+          <div class="chart-title">Estado de Equipos</div>
+          <canvas id="chart-estados" height="180"></canvas>
+        </div>
+        <div class="chart-container">
+          <div class="chart-title">Tendencia Últimos 6 Meses</div>
+          <canvas id="chart-tendencia" height="180"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-container" style="margin-bottom: 20px;">
+        <div class="chart-title">Top 10 Clientes</div>
+        <canvas id="chart-clientes" height="120"></canvas>
+      </div>
+
+      <button class="primary" onclick="exportarTodoExcel()">📥 Exportar Todo a Excel</button>
+    </div>
+  </div>
+
+  <!-- ALERTAS -->
+  <div id="alerts-app" style="display: none;">
+    <div class="container">
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      <button class="secondary" onclick="showMenu()" style="float:left;">↩️ Menú</button>
+      <h1 style="clear:both; padding-top:20px;">🔔 Centro de Alertas</h1>
+      
+      <div id="alerts-container"></div>
+    </div>
+  </div>
+
+  <!-- MANTENIMIENTO -->
+  <div id="maintenance-app" style="display: none;">
+    <div class="container">
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      <button class="secondary" onclick="showMenu()" style="float:left;">↩️ Menú</button>
+      <button class="primary" onclick="exportarMantenimientoExcel()" style="float:right; margin-left:10px;">📥 Excel</button>
+      <h1 style="clear:both; padding-top:20px;">Mantenimiento de dispensadores</h1>
+      <div id="editing-indicator" style="display:none; background:#fff3cd; padding:10px; margin-bottom:10px;"><strong>⚠️ Editando registro</strong><button onclick="cancelEdit()" style="float:right;">Cancelar</button></div>
+      
+      <form id="form-mantenimiento">
+        <div><label>Fecha</label><input type="date" id="fecha" required></div>
+        <div><label>Código</label><input type="text" id="codigo" required></div>
+        <div><label>Cliente</label><input type="text" id="cliente" required></div>
+        <div><label>Contacto</label><input type="text" id="contacto"></div>
+        <div><label>Teléfono</label><input type="tel" id="telefono" placeholder="+51 999 999 999"></div>
+        <div><label>Costo (S/)</label><input type="number" step="0.01" id="costo" placeholder="0.00"></div>
+        <div style="grid-column:1/-1"><label>Motivo</label><textarea id="motivo" required></textarea></div>
+        <div style="grid-column:1/-1"><label>Observaciones</label><textarea id="observaciones"></textarea></div>
+        <div style="grid-column:1/-1"><label>Reparación</label><textarea id="reparacion"></textarea></div>
+        <div>
+          <label>Estado</label>
+          <select id="estado">
+            <option value="recibido">Recibido</option>
+            <option value="listo">Listo</option>
+            <option value="entregado-almacen">Entregado a Almacén</option>
+            <option value="entregado-cliente">Entregado al Cliente</option>
+          </select>
+        </div>
+        <div id="div-fecha-almacen" style="display:none;"><label>Fecha E. Almacén</label><input type="date" id="f-almacen"></div>
+        <div id="div-fecha-cliente" style="display:none;"><label>Fecha E. Cliente</label><input type="date" id="f-cliente"></div>
+        <div class="form-actions">
+          <button type="button" class="secondary" onclick="abrirFirma()">✍️ Firma</button>
+          <button type="submit" class="primary" id="submit-btn">Guardar Registro</button>
+        </div>
+      </form>
+      
+      <div class="stats-summary">
+        <div class="stat-pill" style="border-left: 5px solid #ffc107; cursor: pointer;" onclick="filterByStatus('recibido')">Recibidos: <span id="count-recibido">0</span></div>
+        <div class="stat-pill" style="border-left: 5px solid #17a2b8; cursor: pointer;" onclick="filterByStatus('entregado-almacen')">En Almacén: <span id="count-almacen">0</span></div>
+        <div class="stat-pill" style="border-left: 5px solid #28a745; cursor: pointer;" onclick="filterByStatus('entregado-cliente')">Entregados: <span id="count-cliente">0</span></div>
+        <div class="stat-pill" style="border-left: 5px solid #6c757d; cursor: pointer;" onclick="filterByStatus('todos')">Todos</div>
+      </div>
+
+      <div class="controls"><input type="search" id="search-box" placeholder="Buscar por código o cliente..."></div>
+      <div style="overflow-x:auto;">
+        <table id="tabla-registros">
+          <thead><tr><th>Fecha</th><th>Código</th><th>Cliente</th><th>Contacto</th><th>Costo</th><th>Motivo</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- GESTIÓN DE DISPENSADORES (STOCK + PRÉSTAMOS) -->
+  <div id="loan-app" style="display: none;">
+    <div class="container">
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      <button class="secondary" onclick="showMenu()" style="float:left;">↩️ Menú</button>
+      <button class="primary" onclick="exportarDispensadoresExcel()" style="float:right; margin-left:10px;">📥 Excel</button>
+      <h1 style="clear:both; padding-top:20px;">📦 Gestión de Dispensadores</h1>
+      
+      <!-- TABS -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd;">
+        <button id="tab-stock" class="tab-btn" onclick="switchTab('stock')" style="padding: 12px 25px; border: none; background: #007bff; color: white; font-weight: bold; cursor: pointer; border-radius: 8px 8px 0 0;">
+          📦 Stock Disponible
+        </button>
+        <button id="tab-prestamos" class="tab-btn" onclick="switchTab('prestamos')" style="padding: 12px 25px; border: none; background: #f0f0f0; color: #666; font-weight: bold; cursor: pointer; border-radius: 8px 8px 0 0;">
+          📤 Préstamos Activos
+        </button>
+      </div>
+
+      <!-- SECCIÓN STOCK -->
+      <div id="seccion-stock">
+        <div class="stats-summary">
+          <div class="stat-pill" style="border-left: 5px solid #28a745;">
+            Total en Stock: <span id="count-stock">0</span>
+          </div>
+        </div>
+
+        <div id="editing-indicator-stock" style="display:none; background:#fff3cd; padding:10px; margin-bottom:10px;">
+          <strong>⚠️ Editando equipo</strong><button onclick="cancelEditStock()" style="float:right;">Cancelar</button>
+        </div>
+
+        <form id="form-stock">
+          <div><label>Código Interno</label><input type="text" id="s-codigo" required></div>
+          <div><label>Modelo/Descripción</label><input type="text" id="s-modelo" required></div>
+          <div><label>Estado</label><select id="s-estado"><option>Nuevo</option><option>Usado - Excelente</option><option>Usado - Bueno</option></select></div>
+          <div><label>Fecha Ingreso</label><input type="date" id="s-fecha" required></div>
+          <div style="grid-column:1/-1"><label>Observaciones</label><textarea id="s-obs"></textarea></div>
+          
+          <fieldset class="accessory-grid">
+            <legend>Accesorios Incluidos:</legend>
+            <div class="accessory-grid-items">
+              <div class="acc-item"><input type="checkbox" id="s-acc-embudo"><label>Embudo</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-pinza"><label>Pinza</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-rejilla"><label>Rejilla</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-cano-caliente"><label>Caño Caliente</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-cano-tiempo"><label>Caño Tiempo</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-cano-fria"><label>Caño Frio</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-tapa-superior"><label>Tapa Superior</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-tapa-frontal"><label>Tapa Frontal</label></div>
+              <div class="acc-item"><input type="checkbox" id="s-acc-tapa-lateral"><label>Tapas Laterales</label></div>
+            </div>
+          </fieldset>
+          
+          <div class="form-actions">
+            <button type="submit" class="primary">💾 Guardar en Stock</button>
+          </div>
+        </form>
+
+        <div class="controls"><input type="search" id="s-search" placeholder="Buscar por código o modelo..."></div>
+        <div style="overflow-x:auto;">
+          <table id="tabla-stock">
+            <thead><tr><th>Código</th><th>Modelo</th><th>Estado</th><th>Fecha Ingreso</th><th>Accesorios</th><th>Status</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-stock-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SECCIÓN PRÉSTAMOS -->
+      <div id="seccion-prestamos" style="display: none;">
+        <div id="editing-indicator-prestamo" style="background:#fff3cd; padding:10px; display:none; margin-bottom:10px;">
+          <strong>⚠️ Editando</strong><button onclick="cancelEditPrestamo()" style="float:right;">Cancelar</button>
+        </div>
+        
+        <form id="form-prestamo">
+          <div><label>Fecha Préstamo</label><input type="date" id="p-fecha" required></div>
+          <div>
+            <label>Seleccionar de Stock</label>
+            <select id="p-desde-stock" onchange="cargarDesdeStock()">
+              <option value="">-- Seleccionar equipo --</option>
+            </select>
+          </div>
+          <div><label>Código</label><input type="text" id="p-codigo" required></div>
+          <div><label>Cliente</label><input type="text" id="p-cliente" required></div>
+          <div><label>Teléfono</label><input type="tel" id="p-telefono" placeholder="+51 999 999 999"></div>
+          <div><label>Estado</label><select id="p-estado"><option>Nuevo</option><option>Usado</option></select></div>
+          <div style="grid-column:1/-1"><label>Observaciones</label><textarea id="p-obs"></textarea></div>
+          
+          <fieldset class="accessory-grid">
+            <legend>Accesorios:</legend>
+            <div class="accessory-grid-items">
+              <div class="acc-item"><input type="checkbox" id="acc-embudo"><label>Embudo</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-pinza"><label>Pinza</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-rejilla"><label>Rejilla</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-cano-caliente"><label>Caño Caliente</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-cano-tiempo"><label>Caño Tiempo</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-cano-fria"><label>Caño Frio</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-tapa-superior"><label>Tapa Superior</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-tapa-frontal"><label>Tapa Frontal</label></div>
+              <div class="acc-item"><input type="checkbox" id="acc-tapa-lateral"><label>Tapas Laterales</label></div>
+            </div>
+          </fieldset>
+          <div class="form-actions">
+            <button type="button" class="secondary" onclick="abrirFirmaPrestamo()">✍️ Firma</button>
+            <button type="submit" class="primary" id="p-submit">Guardar Préstamo</button>
+          </div>
+        </form>
+        
+        <div class="controls"><input type="search" id="p-search" placeholder="Buscar préstamo..."></div>
+        <div style="overflow-x:auto;">
+          <table id="tabla-prestamos">
+            <thead><tr><th>Fecha</th><th>Código</th><th>Cliente</th><th>Teléfono</th><th>Estado</th><th>Accesorios</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-prestamos-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOCK -->
+  <div id="stock-app" style="display: none;"></div>
+
+  <!-- PLANTA -->
+  <div id="plant-app" style="display: none;" class="container">
+    <button class="secondary" onclick="showMenu()">↩️ Menú</button>
+    
+    <div id="plant-view-master">
+      <h1>Mantenimiento de Planta</h1>
+      <form id="form-nuevo-equipo-planta">
+        <div><label>Código Equipo</label><input type="text" id="pl-master-codigo" required></div>
+        <div><label>Nombre Equipo</label><input type="text" id="pl-master-nombre" required></div>
+        <div class="form-actions"><button type="submit" class="primary">+ Registrar Equipo</button></div>
+      </form>
+      <table id="tabla-maestro-planta">
+        <thead><tr><th>Código</th><th>Nombre del Equipo</th><th>Acciones</th></tr></thead>
+        <tbody id="tabla-maestro-body"></tbody>
+      </table>
+    </div>
+
+    <div id="plant-view-detail" style="display:none;">
+      <button class="secondary" onclick="backToPlantMaster()">⬅ Volver</button>
+      <div class="header-info-equipo">
+        <div><h2 id="pl-display-nombre" style="margin:0;"></h2><p id="pl-display-codigo" style="margin:0; opacity:0.8;"></p></div>
+        <button class="report" id="btn-exportar-historial-pdf" style="background:#28a745;">📄 PDF</button>
+      </div>
+      <form id="form-historial-planta">
+        <div><label>Fecha</label><input type="date" id="pl-hist-fecha" required></div>
+        <div><label>Técnico Responsable</label><input type="text" id="pl-hist-tecnico" required></div>
+        <div><label>Costo (S/)</label><input type="number" step="0.01" id="pl-hist-costo" placeholder="0.00"></div>
+        <div style="grid-column:1/-1"><label>Motivo de Falla</label><textarea id="pl-hist-motivo" required></textarea></div>
+        <div style="grid-column:1/-1"><label>Trabajo Realizado</label><textarea id="pl-hist-trabajo" required></textarea></div>
+        <div class="form-actions"><button type="submit" class="primary">Guardar Registro</button></div>
+      </form>
+      <table id="tabla-historial-planta">
+        <thead><tr><th>Fecha</th><th>Técnico</th><th>Costo</th><th>Motivo</th><th>Trabajo</th><th>Acciones</th></tr></thead>
+        <tbody id="tabla-historial-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL FIRMA -->
+  <div id="firma-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarFirma()">&times;</span>
+      <h2>✍️ Firma Digital</h2>
+      <canvas id="signature-pad" class="signature-pad" width="500" height="200"></canvas>
+      <div class="signature-controls">
+        <button class="secondary" onclick="limpiarFirma()">🗑️ Limpiar</button>
+        <button class="primary" onclick="guardarFirma()">💾 Guardar Firma</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDXjsEFJ4eS7T3HBZH1f-PioCZf-94INVA",
+      authDomain: "mantenimiento-dispensador.firebaseapp.com",
+      projectId: "mantenimiento-dispensador",
+      storageBucket: "mantenimiento-dispensador.firebasestorage.app",
+      messagingSenderId: "68227657642",
+      appId: "1:68227657642:web:dc97cf988fba73159405d3"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+    const colMant = db.collection("mantenimiento");
+    const colPrest = db.collection("prestamos");
+    const colPlantaEquipos = db.collection("planta_maestro");
+    const colPlantaHistorial = db.collection("planta_historial");
+    const colStock = db.collection("stock");
+
+    let currentUser = null;
+    let currentSignature = null;
+    let currentSignaturePrestamo = null;
+    let allData = { mant: [], prest: [], planta: [], stock: [] };
+
+    function hideAll() {
+      document.getElementById('login-screen').style.display='none';
+      document.getElementById('main-menu').style.display='none';
+      document.getElementById('dashboard-app').style.display='none';
+      document.getElementById('maintenance-app').style.display='none';
+      document.getElementById('loan-app').style.display='none';
+      document.getElementById('plant-app').style.display='none';
+      document.getElementById('alerts-app').style.display='none';
+    }
+    function showMenu() { hideAll(); document.getElementById('main-menu').style.display='block'; }
+    function showDashboard() { hideAll(); document.getElementById('dashboard-app').style.display='block'; updateDashboard(); }
+    function showMaintenance() { hideAll(); document.getElementById('maintenance-app').style.display='block'; }
+    function showLoans() { hideAll(); document.getElementById('loan-app').style.display='block'; switchTab('stock'); actualizarSelectStock(); }
+    function showPlant() { hideAll(); document.getElementById('plant-app').style.display='block'; backToPlantMaster(); }
+    function showAlerts() { hideAll(); document.getElementById('alerts-app').style.display='block'; updateAlerts(); }
+    function logout() { auth.signOut(); }
+
+    // Sistema de tabs
+    function switchTab(tab) {
+      if(tab === 'stock') {
+        document.getElementById('seccion-stock').style.display = 'block';
+        document.getElementById('seccion-prestamos').style.display = 'none';
+        document.getElementById('tab-stock').style.background = '#007bff';
+        document.getElementById('tab-stock').style.color = 'white';
+        document.getElementById('tab-prestamos').style.background = '#f0f0f0';
+        document.getElementById('tab-prestamos').style.color = '#666';
+      } else {
+        document.getElementById('seccion-stock').style.display = 'none';
+        document.getElementById('seccion-prestamos').style.display = 'block';
+        document.getElementById('tab-stock').style.background = '#f0f0f0';
+        document.getElementById('tab-stock').style.color = '#666';
+        document.getElementById('tab-prestamos').style.background = '#007bff';
+        document.getElementById('tab-prestamos').style.color = 'white';
+        actualizarSelectStock();
+      }
+    }
+
+    document.getElementById('login-form').onsubmit = e => {
+      e.preventDefault();
+      auth.signInWithEmailAndPassword(document.getElementById('email-input').value, document.getElementById('password-input').value)
+        .catch(() => document.getElementById('error-message').style.display='block');
+    };
+
+    auth.onAuthStateChanged(user => { 
+      if(user) {
+        currentUser = user;
+        document.getElementById('user-email').textContent = user.email;
+        initMant(); 
+        initPrest(); 
+        initPlant();
+        initStock();
+        initMainSearch();
+        showMenu(); 
+      } else { 
+        hideAll(); 
+        document.getElementById('login-screen').style.display='block'; 
+      }
+    });
+
+    function formatDate(s) { if(!s) return ""; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; }
+
+    // ===== BÚSQUEDA GLOBAL =====
+    function initMainSearch() {
+      const searchInput = document.getElementById('main-search');
+      const resultsDiv = document.getElementById('search-results');
+      const resultsContainer = document.getElementById('results-container');
+      
+      searchInput.addEventListener('input', async () => {
+        const term = searchInput.value.toLowerCase().trim();
+        
+        if (term.length < 2) {
+          resultsDiv.style.display = 'none';
+          return;
+        }
+        
+        resultsContainer.innerHTML = '<p style="color: #666;">🔍 Buscando...</p>';
+        resultsDiv.style.display = 'block';
+        
+        const allResults = [];
+        
+        const mantSnap = await colMant.get();
+        mantSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.codigo.toLowerCase().includes(term) || data.cliente.toLowerCase().includes(term)) {
+            allResults.push({
+              tipo: 'Mantenimiento', codigo: data.codigo, cliente: data.cliente,
+              fecha: data.fecha, estado: data.estado, id: doc.id
+            });
+          }
+        });
+        
+        const prestSnap = await colPrest.get();
+        prestSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.codigo.toLowerCase().includes(term) || data.cliente.toLowerCase().includes(term)) {
+            allResults.push({
+              tipo: 'Préstamo', codigo: data.codigo, cliente: data.cliente,
+              fecha: data.fecha, estado: data.estadoGeneral, id: doc.id
+            });
+          }
+        });
+        
+        const plantaSnap = await colPlantaEquipos.get();
+        plantaSnap.forEach(doc => {
+          const data = doc.data();
+          if (data.codigo.toLowerCase().includes(term) || data.nombre.toLowerCase().includes(term)) {
+            allResults.push({ tipo: 'Planta', codigo: data.codigo, cliente: data.nombre, id: doc.id });
+          }
+        });
+        
+        if (allResults.length === 0) {
+          resultsContainer.innerHTML = '<p style="color: #999;">❌ No se encontraron resultados</p>';
+        } else {
+          resultsContainer.innerHTML = allResults.map(r => `
+            <div style="background: white; padding: 12px; margin-bottom: 10px; border-radius: 8px; border-left: 4px solid ${r.tipo === 'Mantenimiento' ? '#4facfe' : r.tipo === 'Préstamo' ? '#43e97b' : '#fa709a'}; cursor: pointer; transition: all 0.2s;" 
+                 onmouseover="this.style.transform='translateX(5px)'" onmouseout="this.style.transform='translateX(0)'"
+                 onclick="goToRecord('${r.tipo}', '${r.id}')">
+              <div style="font-weight: bold; margin-bottom: 5px;">${r.tipo}: ${r.codigo}</div>
+              <div style="color: #666; font-size: 0.9rem;">👤 ${r.cliente}</div>
+              ${r.fecha ? `<div style="color: #999; font-size: 0.85rem;">📅 ${formatDate(r.fecha)}</div>` : ''}
+              ${r.estado ? `<div style="color: #666; font-size: 0.85rem;">📊 ${r.estado}</div>` : ''}
+            </div>
+          `).join('');
+        }
+      });
+    }
+    
+    window.goToRecord = (tipo, id) => {
+      if (tipo === 'Mantenimiento') showMaintenance();
+      else if (tipo === 'Préstamo') showLoans();
+      else if (tipo === 'Planta') { showPlant(); setTimeout(() => openEquipoHistory(id), 100); }
+    };
+
+    // ===== DASHBOARD =====
+    let charts = {};
+
+    function updateDashboard() {
+      const totalMant = allData.mant.length;
+      const pendientes = allData.mant.filter(i => i.estado === 'recibido' || i.estado === 'listo').length;
+      const completados = allData.mant.filter(i => i.estado === 'entregado-cliente').length;
+      const prestamos = allData.prest.length;
+
+      document.getElementById('dash-total-mant').textContent = totalMant;
+      document.getElementById('dash-pendientes').textContent = pendientes;
+      document.getElementById('dash-completados').textContent = completados;
+      document.getElementById('dash-prestamos').textContent = prestamos;
+
+      // Gráfico de Estados
+      const estados = {
+        'Recibido': allData.mant.filter(i => i.estado === 'recibido').length,
+        'Listo': allData.mant.filter(i => i.estado === 'listo').length,
+        'En Almacén': allData.mant.filter(i => i.estado === 'entregado-almacen').length,
+        'Entregado': allData.mant.filter(i => i.estado === 'entregado-cliente').length
+      };
+
+      if(charts.estados) charts.estados.destroy();
+      const ctx1 = document.getElementById('chart-estados').getContext('2d');
+      charts.estados = new Chart(ctx1, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(estados),
+          datasets: [{
+            data: Object.values(estados),
+            backgroundColor: ['#ffc107', '#17a2b8', '#6c757d', '#28a745']
+          }]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { position: 'bottom', labels: { padding: 10, font: { size: 11 } } }
+          }
+        }
+      });
+
+      // Tendencia mensual
+      const meses = {};
+      allData.mant.forEach(i => {
+        if(i.fecha) {
+          const mes = i.fecha.substring(0, 7);
+          meses[mes] = (meses[mes] || 0) + 1;
+        }
+      });
+      const mesesOrdenados = Object.keys(meses).sort().slice(-6);
+
+      if(charts.tendencia) charts.tendencia.destroy();
+      const ctx2 = document.getElementById('chart-tendencia').getContext('2d');
+      charts.tendencia = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: mesesOrdenados,
+          datasets: [{
+            label: 'Equipos',
+            data: mesesOrdenados.map(m => meses[m]),
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 2
+          }]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { font: { size: 10 } } },
+            x: { ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+
+      // Top Clientes
+      const clientes = {};
+      allData.mant.forEach(i => {
+        clientes[i.cliente] = (clientes[i.cliente] || 0) + 1;
+      });
+      const topClientes = Object.entries(clientes).sort((a,b) => b[1]-a[1]).slice(0, 10);
+
+      if(charts.clientes) charts.clientes.destroy();
+      const ctx3 = document.getElementById('chart-clientes').getContext('2d');
+      charts.clientes = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+          labels: topClientes.map(c => c[0]),
+          datasets: [{
+            label: 'Equipos',
+            data: topClientes.map(c => c[1]),
+            backgroundColor: '#f5576c'
+          }]
+        },
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: true,
+          indexAxis: 'y',
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { beginAtZero: true, ticks: { font: { size: 10 } } },
+            y: { ticks: { font: { size: 10 } } }
+          }
+        }
+      });
+    }
+
+    // ===== ALERTAS =====
+    function updateAlerts() {
+      const container = document.getElementById('alerts-container');
+      const alertas = [];
+      const hoy = new Date();
+
+      allData.mant.forEach(i => {
+        if(i.estado === 'recibido' && i.fecha) {
+          const fechaRec = new Date(i.fecha);
+          const dias = Math.floor((hoy - fechaRec) / (1000 * 60 * 60 * 24));
+          if(dias > 7) {
+            alertas.push({
+              tipo: 'urgente',
+              titulo: `⚠️ Equipo ${i.codigo} lleva ${dias} días sin atender`,
+              detalle: `Cliente: ${i.cliente}`,
+              motivo: i.motivo,
+              fecha: formatDate(i.fecha)
+            });
+          } else if(dias > 3) {
+            alertas.push({
+              tipo: 'advertencia',
+              titulo: `⏰ Equipo ${i.codigo} lleva ${dias} días en espera`,
+              detalle: `Cliente: ${i.cliente}`,
+              motivo: i.motivo,
+              fecha: formatDate(i.fecha)
+            });
+          }
+        }
+      });
+
+      const badge = document.getElementById('alert-count');
+      if(alertas.length > 0) {
+        badge.textContent = alertas.length;
+        badge.style.display = 'inline-flex';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      if(alertas.length === 0) {
+        container.innerHTML = '<div style="text-align:center; padding: 40px; color: #28a745;"><h2>✅ Todo en orden</h2><p>No hay alertas pendientes</p></div>';
+      } else {
+        container.innerHTML = alertas.map(a => `
+          <div style="background: ${a.tipo === 'urgente' ? '#fff3cd' : '#d1ecf1'}; padding: 20px; margin-bottom: 15px; border-left: 5px solid ${a.tipo === 'urgente' ? '#ffc107' : '#17a2b8'}; border-radius: 8px;">
+            <h3 style="margin: 0 0 10px 0;">${a.titulo}</h3>
+            <p style="margin: 5px 0; color: #666;">${a.detalle}</p>
+            <p style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.05); border-radius: 4px;"><strong>Motivo:</strong> ${a.motivo}</p>
+            <small style="color: #999;">📅 Recibido: ${a.fecha}</small>
+          </div>
+        `).join('');
+      }
+    }
+
+    // ===== FIRMA DIGITAL =====
+    let firmaCanvas, firmaCtx, dibujando = false;
+
+    function abrirFirma() {
+      document.getElementById('firma-modal').style.display = 'block';
+      setupCanvas();
+    }
+
+    function abrirFirmaPrestamo() {
+      document.getElementById('firma-modal').style.display = 'block';
+      setupCanvas(true);
+    }
+
+    function setupCanvas(esPrestamo = false) {
+      firmaCanvas = document.getElementById('signature-pad');
+      firmaCtx = firmaCanvas.getContext('2d');
+      firmaCtx.clearRect(0, 0, firmaCanvas.width, firmaCanvas.height);
+      firmaCtx.strokeStyle = '#000';
+      firmaCtx.lineWidth = 2;
+      firmaCtx.lineCap = 'round';
+
+      firmaCanvas.onmousedown = (e) => { dibujando = true; firmaCtx.beginPath(); firmaCtx.moveTo(e.offsetX, e.offsetY); };
+      firmaCanvas.onmousemove = (e) => { if(dibujando) { firmaCtx.lineTo(e.offsetX, e.offsetY); firmaCtx.stroke(); } };
+      firmaCanvas.onmouseup = () => { dibujando = false; };
+      firmaCanvas.onmouseleave = () => { dibujando = false; };
+
+      firmaCanvas.ontouchstart = (e) => { 
+        e.preventDefault();
+        const rect = firmaCanvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        dibujando = true; 
+        firmaCtx.beginPath(); 
+        firmaCtx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+      };
+      firmaCanvas.ontouchmove = (e) => { 
+        e.preventDefault();
+        if(dibujando) {
+          const rect = firmaCanvas.getBoundingClientRect();
+          const touch = e.touches[0];
+          firmaCtx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+          firmaCtx.stroke();
+        }
+      };
+      firmaCanvas.ontouchend = () => { dibujando = false; };
+
+      // Guardar referencia si es préstamo
+      firmaCanvas.dataset.esPrestamo = esPrestamo;
+    }
+
+    function limpiarFirma() {
+      firmaCtx.clearRect(0, 0, firmaCanvas.width, firmaCanvas.height);
+    }
+
+    function guardarFirma() {
+      const firma = firmaCanvas.toDataURL();
+      if(firmaCanvas.dataset.esPrestamo === 'true') {
+        currentSignaturePrestamo = firma;
+        alert('✅ Firma del cliente guardada correctamente');
+      } else {
+        currentSignature = firma;
+        alert('✅ Firma guardada correctamente');
+      }
+      cerrarFirma();
+    }
+
+    function cerrarFirma() {
+      document.getElementById('firma-modal').style.display = 'none';
+    }
+
+    // ===== EXPORTAR EXCEL =====
+    function exportarTodoExcel() {
+      const wb = XLSX.utils.book_new();
+      
+      const mantData = allData.mant.map(i => ({
+        Fecha: formatDate(i.fecha),
+        Código: i.codigo,
+        Cliente: i.cliente,
+        Contacto: i.contacto || '',
+        Teléfono: i.telefono || '',
+        Estado: i.estado,
+        Costo: i.costo || 0,
+        Motivo: i.motivo,
+        Reparación: i.reparacion || ''
+      }));
+      const ws1 = XLSX.utils.json_to_sheet(mantData);
+      XLSX.utils.book_append_sheet(wb, ws1, "Mantenimiento");
+
+      const prestData = allData.prest.map(i => ({
+        Fecha: formatDate(i.fecha),
+        Código: i.codigo,
+        Cliente: i.cliente,
+        Teléfono: i.telefono || '',
+        Estado: i.estadoGeneral
+      }));
+      const ws2 = XLSX.utils.json_to_sheet(prestData);
+      XLSX.utils.book_append_sheet(wb, ws2, "Préstamos");
+
+      XLSX.writeFile(wb, `Reporte_Completo_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    function exportarMantenimientoExcel() {
+      const data = allData.mant.map(i => ({
+        Fecha: formatDate(i.fecha),
+        Código: i.codigo,
+        Cliente: i.cliente,
+        Contacto: i.contacto || '',
+        Teléfono: i.telefono || '',
+        Estado: i.estado,
+        Costo: i.costo || 0,
+        'Fecha Almacén': i.fechaEntregaAlmacen ? formatDate(i.fechaEntregaAlmacen) : '',
+        'Fecha Cliente': i.fechaEntregaCliente ? formatDate(i.fechaEntregaCliente) : '',
+        Motivo: i.motivo,
+        Observaciones: i.observaciones || '',
+        Reparación: i.reparacion || ''
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Mantenimiento");
+      XLSX.writeFile(wb, `Mantenimiento_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    function exportarPrestamosExcel() {
+      const data = allData.prest.map(i => ({
+        Fecha: formatDate(i.fecha),
+        Código: i.codigo,
+        Cliente: i.cliente,
+        Teléfono: i.telefono || '',
+        Estado: i.estadoGeneral,
+        Observaciones: i.observaciones || '',
+        Embudo: i.embudo ? 'Sí' : 'No',
+        Pinza: i.pinza ? 'Sí' : 'No',
+        Rejilla: i.rejilla ? 'Sí' : 'No',
+        'Caño Caliente': i.canoCaliente ? 'Sí' : 'No',
+        'Caño Tiempo': i.canoTiempo ? 'Sí' : 'No',
+        'Caño Fría': i.canoFria ? 'Sí' : 'No',
+        'Tapa Superior': i.tapaSuperior ? 'Sí' : 'No',
+        'Tapa Frontal': i.tapaFrontal ? 'Sí' : 'No',
+        'Tapas Laterales': i.tapaLateral ? 'Sí' : 'No'
+      }));
+      const ws = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Préstamos");
+      XLSX.writeFile(wb, `Prestamos_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    // ===== WHATSAPP =====
+    function enviarWhatsApp(telefono, codigo, cliente) {
+      if(!telefono) {
+        alert('❌ No hay número de teléfono registrado');
+        return;
+      }
+      const msg = `Hola! Su equipo *${codigo}* ya está listo para ser retirado. Saludos - Control de Operaciones`;
+      const url = `https://wa.me/${telefono.replace(/\D/g, '')}?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+    }
+
+    // ===== MANTENIMIENTO =====
+    function initMant() {
+      const form = document.getElementById('form-mantenimiento');
+      const table = document.getElementById('tabla-body');
+      const search = document.getElementById('search-box');
+      const est = document.getElementById('estado');
+      let data = [], editId = null, currentFilter = 'todos';
+
+      est.addEventListener('change', () => {
+         const v = est.value;
+         document.getElementById('div-fecha-almacen').style.display = (v.includes('almacen')||v.includes('cliente'))?'block':'none';
+         document.getElementById('div-fecha-cliente').style.display = (v.includes('cliente'))?'block':'none';
+      });
+
+      colMant.orderBy("fecha", "desc").onSnapshot(snap => {
+        data = []; let cR=0, cA=0, cC=0;
+        snap.forEach(d => {
+          const item = d.data(); data.push({...item, id:d.id});
+          if(item.estado==='recibido') cR++; else if(item.estado==='entregado-almacen') cA++; else if(item.estado==='entregado-cliente') cC++;
+        });
+        allData.mant = data;
+        document.getElementById('count-recibido').innerText = cR;
+        document.getElementById('count-almacen').innerText = cA;
+        document.getElementById('count-cliente').innerText = cC;
+        render();
+        updateAlerts();
+      });
+
+      window.filterByStatus = (status) => {
+        currentFilter = status;
+        render();
+      };
+
+      function render() {
+        const t = search.value.toLowerCase();
+        let f = data.filter(i => i.codigo.toLowerCase().includes(t) || i.cliente.toLowerCase().includes(t));
+        
+        if(currentFilter !== 'todos') {
+          f = f.filter(i => i.estado === currentFilter);
+        }
+        
+        table.innerHTML = f.map(i => `<tr>
+          <td>${formatDate(i.fecha)}</td><td>${i.codigo}</td><td>${i.cliente}</td><td>${i.contacto || ''}</td>
+          <td>S/ ${i.costo || '0.00'}</td><td>${i.motivo.substring(0,50)}...</td><td>${i.estado}</td>
+          <td>
+            <button class="report" onclick="repMant('${i.id}')">PDF</button>
+            ${i.telefono ? `<button class="whatsapp" onclick="enviarWhatsApp('${i.telefono}','${i.codigo}','${i.cliente}')">📱</button>` : ''}
+            <button class="edit" onclick="edMant('${i.id}')">✏️</button>
+            <button class="delete" onclick="delMant('${i.id}')">🗑</button>
+          </td>
+        </tr>`).join('');
+      }
+      search.oninput = render;
+
+      form.onsubmit = async e => {
+        e.preventDefault();
+        const cod = document.getElementById('codigo').value;
+        const obj = {
+          fecha: document.getElementById('fecha').value,
+          codigo: cod,
+          cliente: document.getElementById('cliente').value,
+          contacto: document.getElementById('contacto').value,
+          telefono: document.getElementById('telefono').value,
+          costo: parseFloat(document.getElementById('costo').value) || 0,
+          motivo: document.getElementById('motivo').value,
+          observaciones: document.getElementById('observaciones').value,
+          reparacion: document.getElementById('reparacion').value,
+          estado: est.value,
+          fechaEntregaAlmacen: document.getElementById('f-almacen').value,
+          fechaEntregaCliente: document.getElementById('f-cliente').value,
+          firma: currentSignature || '',
+          usuarioModificacion: currentUser.email,
+          fechaModificacion: new Date().toISOString()
+        };
+
+        if(editId) { await colMant.doc(editId).update(obj); cancelEdit(); }
+        else {
+          const dup = data.find(i => i.codigo.toLowerCase() === cod.toLowerCase());
+          if(dup && confirm(`Código ${cod} ya existe. ¿Deseas actualizarlo?`)) await colMant.doc(dup.id).update(obj);
+          else if(!dup) await colMant.add(obj);
+        }
+        form.reset(); 
+        document.getElementById('fecha').valueAsDate = new Date();
+        currentSignature = null;
+      };
+
+      window.edMant = id => {
+         const i = data.find(d=>d.id===id);
+         document.getElementById('fecha').value = i.fecha;
+         document.getElementById('codigo').value = i.codigo;
+         document.getElementById('cliente').value = i.cliente;
+         document.getElementById('contacto').value = i.contacto||'';
+         document.getElementById('telefono').value = i.telefono||'';
+         document.getElementById('costo').value = i.costo||'';
+         document.getElementById('motivo').value = i.motivo;
+         document.getElementById('observaciones').value = i.observaciones||'';
+         document.getElementById('reparacion').value = i.reparacion||'';
+         est.value = i.estado;
+         document.getElementById('f-almacen').value = i.fechaEntregaAlmacen||'';
+         document.getElementById('f-cliente').value = i.fechaEntregaCliente||'';
+         currentSignature = i.firma || null;
+         editId = id;
+         document.getElementById('editing-indicator').style.display='block';
+         est.dispatchEvent(new Event('change'));
+      };
+      window.cancelEdit = () => {
+        editId=null;
+        form.reset();
+        currentSignature = null;
+        document.getElementById('editing-indicator').style.display='none';
+        est.dispatchEvent(new Event('change'));
+      };
+      window.delMant = id => { if(confirm("¿Borrar?")) colMant.doc(id).delete(); };
+
+      window.repMant = id => {
+        const item = data.find(d => d.id === id);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(18); doc.setFont("helvetica", "bold");
+        doc.text('REPORTE DE MANTENIMIENTO', 105, 20, { align: 'center' });
+        doc.setLineWidth(0.5); doc.line(20, 25, 190, 25);
+        doc.setFontSize(14); doc.text('INFORMACIÓN DEL EQUIPO', 20, 35);
+        doc.setFontSize(12); let y = 45;
+
+        const info = [
+          ['Código:', item.codigo],
+          ['Cliente:', item.cliente],
+          ['Fecha:', formatDate(item.fecha)],
+          ['Estado:', item.estado.toUpperCase()],
+          ['Costo:', `S/ ${item.costo || '0.00'}`]
+        ];
+        info.forEach(l => {
+          doc.setFont("helvetica", "bold");
+          doc.text(l[0], 20, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(l[1], 70, y);
+          y += 10;
+        });
+        if(item.fechaEntregaAlmacen) {
+          doc.setFont("helvetica", "bold");
+          doc.text('Fecha Entrega Almacén:', 20, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(formatDate(item.fechaEntregaAlmacen), 70, y);
+          y += 10;
+        }
+        if(item.fechaEntregaCliente) {
+          doc.setFont("helvetica", "bold");
+          doc.text('Fecha Entrega Cliente:', 20, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(formatDate(item.fechaEntregaCliente), 70, y);
+          y += 10;
+        }
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("OBSERVACIONES:", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        const obs = doc.splitTextToSize(item.observaciones || "N/A", 170);
+        doc.text(obs, 20, y);
+        y += obs.length * 7 + 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("MOTIVO:", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        const m = doc.splitTextToSize(item.motivo, 170);
+        doc.text(m, 20, y);
+        y += m.length * 7 + 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("TRABAJO REALIZADO:", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        const r = doc.splitTextToSize(item.reparacion || "N/A", 170);
+        doc.text(r, 20, y);
+        y += r.length * 7 + 15;
+
+        if(item.firma) {
+          if(y > 240) { doc.addPage(); y = 20; }
+          doc.setFont("helvetica", "bold");
+          doc.text("FIRMA:", 20, y);
+          y += 5;
+          doc.addImage(item.firma, 'PNG', 20, y, 60, 20);
+        }
+
+        doc.save(`Reporte_${item.codigo}.pdf`);
+      };
+      document.getElementById('fecha').valueAsDate = new Date();
+    }
+
+    // ===== STOCK =====
+    function initStock() {
+      const form = document.getElementById('form-stock');
+      const table = document.getElementById('tabla-stock-body');
+      const search = document.getElementById('s-search');
+      let data = [], editId = null;
+
+      colStock.orderBy("fechaIngreso", "desc").onSnapshot(snap => {
+        data = [];
+        let enStock = 0, prestados = 0;
+        snap.forEach(d => {
+          const item = d.data();
+          data.push({...item, id:d.id});
+          if(item.enPrestamo) prestados++;
+          else enStock++;
+        });
+        allData.stock = data;
+        document.getElementById('count-stock').innerText = enStock;
+        document.getElementById('count-prestados').innerText = prestados;
+        render();
+      });
+
+      function render() {
+        const t = search.value.toLowerCase();
+        const f = data.filter(i => i.codigo.toLowerCase().includes(t) || i.modelo.toLowerCase().includes(t));
+        
+        table.innerHTML = f.map(i => {
+          const accs = ['embudo','pinza','rejilla','canoCaliente','canoTiempo','canoFria','tapaSuperior','tapaFrontal','tapaLateral']
+            .filter(a => i[a])
+            .map(a => a.replace('cano','Caño ').replace('tapa','Tapa '))
+            .join(', ');
+          
+          const statusBadge = i.enPrestamo 
+            ? `<span style="background:#17a2b8; color:white; padding:5px 10px; border-radius:12px; font-size:0.85rem;">📤 En Préstamo</span>`
+            : `<span style="background:#28a745; color:white; padding:5px 10px; border-radius:12px; font-size:0.85rem;">✅ Disponible</span>`;
+
+          return `<tr style="${i.enPrestamo ? 'background:#f8f9fa;' : ''}">
+            <td><strong>${i.codigo}</strong></td>
+            <td>${i.modelo}</td>
+            <td>${i.estado}</td>
+            <td>${formatDate(i.fechaIngreso)}</td>
+            <td style="font-size:0.85rem;">${accs || 'Sin accesorios'}</td>
+            <td>${statusBadge}</td>
+            <td>
+              ${!i.enPrestamo ? `
+                <button class="edit" onclick="edStock('${i.id}')">✏️</button>
+                <button class="delete" onclick="delStock('${i.id}')">🗑</button>
+              ` : `<small style="color:#999;">Con ${i.clientePrestamo}</small>`}
+            </td>
+          </tr>`;
+        }).join('');
+      }
+      search.oninput = render;
+
+      form.onsubmit = async e => {
+        e.preventDefault();
+        const obj = {
+          codigo: document.getElementById('s-codigo').value,
+          modelo: document.getElementById('s-modelo').value,
+          estado: document.getElementById('s-estado').value,
+          fechaIngreso: document.getElementById('s-fecha').value,
+          observaciones: document.getElementById('s-obs').value,
+          embudo: document.getElementById('s-acc-embudo').checked,
+          pinza: document.getElementById('s-acc-pinza').checked,
+          rejilla: document.getElementById('s-acc-rejilla').checked,
+          canoCaliente: document.getElementById('s-acc-cano-caliente').checked,
+          canoTiempo: document.getElementById('s-acc-cano-tiempo').checked,
+          canoFria: document.getElementById('s-acc-cano-fria').checked,
+          tapaSuperior: document.getElementById('s-acc-tapa-superior').checked,
+          tapaFrontal: document.getElementById('s-acc-tapa-frontal').checked,
+          tapaLateral: document.getElementById('s-acc-tapa-lateral').checked,
+          enPrestamo: false,
+          usuarioCreacion: currentUser.email,
+          fechaCreacion: new Date().toISOString()
+        };
+
+        if(editId) {
+          await colStock.doc(editId).update(obj);
+          editId = null;
+          document.getElementById('editing-indicator-stock').style.display='none';
+        } else {
+          const dup = data.find(i => i.codigo.toLowerCase() === obj.codigo.toLowerCase());
+          if(dup) {
+            alert('❌ Código ya existe');
+            return;
+          }
+          await colStock.add(obj);
+        }
+        form.reset();
+        document.getElementById('s-fecha').valueAsDate = new Date();
+      };
+
+      window.edStock = id => {
+        const i = data.find(d=>d.id===id);
+        document.getElementById('s-codigo').value = i.codigo;
+        document.getElementById('s-modelo').value = i.modelo;
+        document.getElementById('s-estado').value = i.estado;
+        document.getElementById('s-fecha').value = i.fechaIngreso;
+        document.getElementById('s-obs').value = i.observaciones||'';
+        document.getElementById('s-acc-embudo').checked = i.embudo || false;
+        document.getElementById('s-acc-pinza').checked = i.pinza || false;
+        document.getElementById('s-acc-rejilla').checked = i.rejilla || false;
+        document.getElementById('s-acc-cano-caliente').checked = i.canoCaliente || false;
+        document.getElementById('s-acc-cano-tiempo').checked = i.canoTiempo || false;
+        document.getElementById('s-acc-cano-fria').checked = i.canoFria || false;
+        document.getElementById('s-acc-tapa-superior').checked = i.tapaSuperior || false;
+        document.getElementById('s-acc-tapa-frontal').checked = i.tapaFrontal || false;
+        document.getElementById('s-acc-tapa-lateral').checked = i.tapaLateral || false;
+        editId=id;
+        document.getElementById('editing-indicator-stock').style.display='block';
+      };
+
+      window.cancelEditStock = () => {
+        editId=null;
+        form.reset();
+        document.getElementById('editing-indicator-stock').style.display='none';
+      };
+
+      window.delStock = id => { 
+        if(confirm("¿Eliminar del stock?")) colStock.doc(id).delete(); 
+      };
+
+      document.getElementById('s-fecha').valueAsDate = new Date();
+    }
+
+    function exportarDispensadoresExcel() {
+      const wb = XLSX.utils.book_new();
+      
+      // Hoja de Stock
+      const stockData = allData.stock.map(i => ({
+        Código: i.codigo,
+        Modelo: i.modelo,
+        Estado: i.estado,
+        'Fecha Ingreso': formatDate(i.fechaIngreso),
+        Status: i.enPrestamo ? 'En Préstamo' : 'Disponible',
+        'Cliente Préstamo': i.clientePrestamo || '',
+        Observaciones: i.observaciones || ''
+      }));
+      const ws1 = XLSX.utils.json_to_sheet(stockData);
+      XLSX.utils.book_append_sheet(wb, ws1, "Stock");
+
+      // Hoja de Préstamos
+      const prestData = allData.prest.map(i => ({
+        Fecha: formatDate(i.fecha),
+        Código: i.codigo,
+        Cliente: i.cliente,
+        Teléfono: i.telefono || '',
+        Estado: i.estadoGeneral,
+        'Desde Stock': i.desdeStock ? 'Sí' : 'No',
+        Devuelto: i.devuelto ? 'Sí' : 'No'
+      }));
+      const ws2 = XLSX.utils.json_to_sheet(prestData);
+      XLSX.utils.book_append_sheet(wb, ws2, "Préstamos");
+
+      XLSX.writeFile(wb, `Dispensadores_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    // ===== PRÉSTAMOS CON INTEGRACIÓN DE STOCK =====
+    function initPrest() {
+      const table = document.getElementById('tabla-prestamos-body');
+      let data = [], editId = null;
+
+      colPrest.orderBy("fecha", "desc").onSnapshot(snap => {
+        data = [];
+        snap.forEach(d => data.push({...d.data(), id:d.id}));
+        allData.prest = data;
+        table.innerHTML = data.map(i => {
+          const accs = ['embudo','pinza','rejilla','canoCaliente','canoTiempo','canoFria','tapaSuperior','tapaFrontal','tapaLateral']
+            .filter(a => i[a])
+            .map(a => a.replace('cano','Caño ').replace('tapa','Tapa '))
+            .join(', ');
+          return `<tr>
+            <td>${formatDate(i.fecha)}</td>
+            <td>${i.codigo}</td>
+            <td>${i.cliente}</td>
+            <td>${i.telefono || '-'}</td>
+            <td>${i.estadoGeneral}</td>
+            <td>${accs || 'Ninguno'}</td>
+            <td>
+              <button class="report" onclick="repPrest('${i.id}')">PDF</button>
+              ${i.telefono ? `<button class="whatsapp" onclick="enviarWhatsApp('${i.telefono}','${i.codigo}','${i.cliente}')">📱</button>` : ''}
+              <button class="edit" onclick="edPrest('${i.id}')">✏️</button>
+              <button class="delete" onclick="delPrest('${i.id}')">🗑</button>
+            </td>
+          </tr>`;
+        }).join('');
+      });
+
+      document.getElementById('form-prestamo').onsubmit = async e => {
+        e.preventDefault();
+        const cod = document.getElementById('p-codigo').value;
+        const obj = {
+          fecha: document.getElementById('p-fecha').value,
+          codigo: cod,
+          cliente: document.getElementById('p-cliente').value,
+          telefono: document.getElementById('p-telefono').value,
+          estadoGeneral: document.getElementById('p-estado').value,
+          observaciones: document.getElementById('p-obs').value,
+          embudo: document.getElementById('acc-embudo').checked,
+          pinza: document.getElementById('acc-pinza').checked,
+          rejilla: document.getElementById('acc-rejilla').checked,
+          canoCaliente: document.getElementById('acc-cano-caliente').checked,
+          canoTiempo: document.getElementById('acc-cano-tiempo').checked,
+          canoFria: document.getElementById('acc-cano-fria').checked,
+          tapaSuperior: document.getElementById('acc-tapa-superior').checked,
+          tapaFrontal: document.getElementById('acc-tapa-frontal').checked,
+          tapaLateral: document.getElementById('acc-tapa-lateral').checked,
+          usuarioModificacion: currentUser.email,
+          fechaModificacion: new Date().toISOString()
+        };
+        if(editId) {
+          await colPrest.doc(editId).update(obj);
+          cancelEditPrestamo();
+        } else {
+          const dup = data.find(i => i.codigo.toLowerCase() === cod.toLowerCase());
+          if(dup && confirm(`Equipo en préstamo. ¿Actualizar?`)) await colPrest.doc(dup.id).update(obj);
+          else if(!dup) await colPrest.add(obj);
+        }
+        e.target.reset();
+        document.getElementById('p-fecha').valueAsDate = new Date();
+      };
+
+      window.edPrest = id => {
+         const i = data.find(d=>d.id===id);
+         document.getElementById('p-fecha').value = i.fecha;
+         document.getElementById('p-codigo').value = i.codigo;
+         document.getElementById('p-cliente').value = i.cliente;
+         document.getElementById('p-telefono').value = i.telefono||'';
+         document.getElementById('p-estado').value = i.estadoGeneral;
+         document.getElementById('p-obs').value = i.observaciones||'';
+         
+         document.getElementById('acc-embudo').checked = i.embudo || false;
+         document.getElementById('acc-pinza').checked = i.pinza || false;
+         document.getElementById('acc-rejilla').checked = i.rejilla || false;
+         document.getElementById('acc-cano-caliente').checked = i.canoCaliente || false;
+         document.getElementById('acc-cano-tiempo').checked = i.canoTiempo || false;
+         document.getElementById('acc-cano-fria').checked = i.canoFria || false;
+         document.getElementById('acc-tapa-superior').checked = i.tapaSuperior || false;
+         document.getElementById('acc-tapa-frontal').checked = i.tapaFrontal || false;
+         document.getElementById('acc-tapa-lateral').checked = i.tapaLateral || false;
+         
+         editId=id;
+         document.getElementById('editing-indicator-prestamo').style.display='block';
+      };
+      window.cancelEditPrestamo = () => {
+        editId=null;
+        document.getElementById('form-prestamo').reset();
+        document.getElementById('editing-indicator-prestamo').style.display='none';
+      };
+      window.delPrest = id => { if(confirm("¿Borrar?")) colPrest.doc(id).delete(); };
+      
+      window.repPrest = id => {
+        const item = data.find(d => d.id === id);
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(18); doc.setFont("helvetica", "bold");
+        doc.text('REPORTE DE PRÉSTAMO', 105, 20, { align: 'center' });
+        doc.setLineWidth(0.5); doc.line(20, 25, 190, 25);
+        doc.setFontSize(14); doc.text('INFORMACIÓN DEL EQUIPO', 20, 35);
+        doc.setFontSize(12); let y = 45;
+
+        const info = [
+          ['Código:', item.codigo],
+          ['Cliente:', item.cliente],
+          ['Fecha:', formatDate(item.fecha)],
+          ['Estado:', item.estadoGeneral.toUpperCase()]
+        ];
+        info.forEach(l => {
+          doc.setFont("helvetica", "bold");
+          doc.text(l[0], 20, y);
+          doc.setFont("helvetica", "normal");
+          doc.text(l[1], 70, y);
+          y += 10;
+        });
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("OBSERVACIONES:", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        const obs = doc.splitTextToSize(item.observaciones || "Sin observaciones", 170);
+        doc.text(obs, 20, y);
+        y += obs.length * 7 + 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text("ACCESORIOS INCLUIDOS:", 20, y);
+        y += 10;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("ACCESORIO", 30, y);
+        doc.text("ESTADO", 120, y);
+        y += 8;
+        doc.setFont("helvetica", "normal");
+        ['Embudo','Pinza','Rejilla','Caño Caliente','Caño Tiempo','Caño Fria','Tapa Superior','Tapa Frontal','Tapas Laterales'].forEach(a => {
+           let key = a.charAt(0).toLowerCase() + a.slice(1).replace(' ', '').replace('ñ','no').replace('Tapas','Tapa');
+           if(key === 'tapaFria') key = 'canoFria';
+           doc.text(a, 30, y);
+           doc.text(item[key] ? 'Sí' : 'No', 120, y);
+           y += 7;
+        });
+        doc.save(`Prestamo_${item.codigo}.pdf`);
+      };
+      document.getElementById('p-fecha').valueAsDate = new Date();
+    }
+
+    // ===== PLANTA =====
+    function initPlant() {
+      colPlantaEquipos.onSnapshot(snap => {
+        const tb = document.getElementById('tabla-maestro-body');
+        tb.innerHTML = '';
+        snap.forEach(doc => {
+          const d = doc.data();
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${d.codigo}</td><td>${d.nombre}</td>
+            <td>
+              <button class="primary" onclick="openEquipoHistory('${doc.id}')">📂 Ver Historial</button> 
+              <button class="delete" onclick="deleteEqPlanta('${doc.id}')">🗑️</button>
+            </td>`;
+          tb.appendChild(tr);
+        });
+      });
+
+      document.getElementById('form-nuevo-equipo-planta').onsubmit = async e => {
+        e.preventDefault();
+        const cod = document.getElementById('pl-master-codigo').value;
+        const nom = document.getElementById('pl-master-nombre').value;
+        const snapshot = await colPlantaEquipos.where("codigo", "==", cod).get();
+        if(!snapshot.empty && confirm("El equipo ya existe. ¿Actualizar nombre?")) {
+          await colPlantaEquipos.doc(snapshot.docs[0].id).update({nombre: nom});
+        } else if(snapshot.empty) {
+          await colPlantaEquipos.add({codigo: cod, nombre: nom});
+        }
+        e.target.reset();
+      };
+    }
+
+    let curEqId = null, curEqData = null;
+
+    window.openEquipoHistory = id => {
+      curEqId = id;
+      colPlantaEquipos.doc(id).get().then(doc => {
+        curEqData = doc.data();
+        document.getElementById('pl-display-nombre').innerText = curEqData.nombre;
+        document.getElementById('pl-display-codigo').innerText = `CÓDIGO: ${curEqData.codigo}`;
+        document.getElementById('plant-view-master').style.display='none';
+        document.getElementById('plant-view-detail').style.display='block';
+        loadHistPl(id);
+      });
+    };
+
+    window.backToPlantMaster = () => {
+      document.getElementById('plant-view-master').style.display='block';
+      document.getElementById('plant-view-detail').style.display='none';
+    };
+
+    function loadHistPl(id) {
+      colPlantaHistorial.where("equipoId", "==", id).onSnapshot(snap => {
+        const tb = document.getElementById("tabla-historial-body");
+        tb.innerHTML = "";
+        
+        const registros = [];
+        snap.forEach(doc => {
+          registros.push({ id: doc.id, ...doc.data() });
+        });
+        
+        registros.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+
+        registros.forEach(h => {
+          tb.innerHTML += `
+            <tr>
+              <td>${formatDate(h.fecha) || ''}</td>
+              <td>${h.tec || ''}</td>
+              <td>S/ ${h.costo || '0.00'}</td>
+              <td>${h.motivo || ''}</td>
+              <td>${h.trabajo || ''}</td>
+              <td>
+                <button class="delete" onclick="delHistPl('${h.id}')">🗑️</button>
+              </td>
+            </tr>
+          `;
+        });
+      });
+    }
+
+    document.getElementById('form-historial-planta').onsubmit = e => {
+      e.preventDefault();
+      colPlantaHistorial.add({
+        equipoId: curEqId,
+        fecha: document.getElementById('pl-hist-fecha').value,
+        tec: document.getElementById('pl-hist-tecnico').value,
+        costo: parseFloat(document.getElementById('pl-hist-costo').value) || 0,
+        motivo: document.getElementById('pl-hist-motivo').value,
+        trabajo: document.getElementById('pl-hist-trabajo').value,
+        usuarioModificacion: currentUser.email,
+        fechaModificacion: new Date().toISOString()
+      }).then(() => {
+        e.target.reset();
+        document.getElementById('pl-hist-fecha').valueAsDate = new Date();
+      });
+    };
+
+    window.delHistPl = id => {
+      if(confirm("¿Borrar este registro?")) colPlantaHistorial.doc(id).delete();
+    };
+    
+    window.deleteEqPlanta = id => {
+      if(confirm("¿Borrar equipo e historial completo?")) { 
+        colPlantaEquipos.doc(id).delete(); 
+        colPlantaHistorial.where("equipoId","==",id).get().then(s => s.forEach(d => d.ref.delete())); 
+      }
+    };
+
+    document.getElementById('btn-exportar-historial-pdf').onclick = () => {
+      colPlantaHistorial.where("equipoId","==",curEqId).get().then(snap => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text('HISTORIAL DE MANTENIMIENTO', 105, 20, { align: 'center' });
+        doc.setLineWidth(0.5);
+        doc.line(20, 25, 190, 25);
+        doc.setFontSize(14);
+        doc.text(`EQUIPO: ${curEqData.nombre} (${curEqData.codigo})`, 20, 35);
+        doc.setFontSize(12);
+        let y = 50;
+        
+        const registros = [];
+        snap.forEach(d => {
+          registros.push(d.data());
+        });
+        registros.sort((a, b) => (a.fecha || '').localeCompare(b.fecha || ''));
+        
+        let totalCosto = 0;
+        registros.forEach(h => {
+          if(y > 260) { doc.addPage(); y = 20; }
+          doc.setFont("helvetica", "bold");
+          doc.text(`${formatDate(h.fecha)} - Téc: ${h.tec || ''} - Costo: S/ ${h.costo || '0.00'}`, 20, y);
+          totalCosto += parseFloat(h.costo) || 0;
+          y += 7;
+          doc.setFont("helvetica", "normal");
+          const t = doc.splitTextToSize(`Motivo: ${h.motivo} | Trabajo: ${h.trabajo}`, 170);
+          doc.text(t, 20, y);
+          y += (t.length * 6) + 10;
+        });
+
+        if(y > 260) { doc.addPage(); y = 20; }
+        y += 10;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(14);
+        doc.text(`COSTO TOTAL: S/ ${totalCosto.toFixed(2)}`, 20, y);
+        
+        doc.save(`Historial_${curEqData.codigo}.pdf`);
+      });
+    };
+  </script>
+</body>
+</html>
