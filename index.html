@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Control de Operaciones Pro - Ing. José Córdova</title>
+  <title>Control de Operaciones - Ing. José Córdova</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -130,7 +130,7 @@
 <body>
 
   <div class="login-container" id="login-screen">
-    <h2>Control de Operaciones</h2>
+    <h2>🔧 Control de Operaciones </h2>
     <form id="login-form" style="display:block; border:none; padding:0; box-shadow:none;">
       <input type="email" id="email-input" placeholder="Correo electrónico" required>
       <input type="password" id="password-input" placeholder="Contraseña" required>
@@ -158,13 +158,14 @@
       <button class="menu-btn mant" onclick="showMaintenance()">🔧 Mantenimiento</button>
       <button class="menu-btn loan" onclick="showLoans()">📦 Gestión Dispensadores</button>
       <button class="menu-btn plant" onclick="showPlant()">🏭 Planta</button>
+      <button class="menu-btn" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);" onclick="showReparto()">🚚 Reparto</button>
       <button class="menu-btn alerts" onclick="showAlerts()">🔔 Alertas<span id="alert-count" class="alert-badge" style="display:none;">0</span></button>
     </div>
     
     <button class="logout-btn" onclick="logout()" style="float:none; margin-top:30px; width: 100%;">Cerrar Sesión</button>
     
     <div class="signature-container">
-      <a href="https://www.linkedin.com/in/jose-marcelo-cordova-garcia-759847191?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app" target="_blank" class="profile-link">
+      <a href="https://.com" target="_blank" class="profile-link">
         <img src="https://i.ibb.co/5Wn2vmD1/Whats-App-Image-2025-12-28-at-10-08-57.jpg" alt="Ing. José Córdova" class="profile-pic">
         <span>Diseñado por Ing. José Córdova</span>
       </a>
@@ -309,6 +310,9 @@
           <div class="stat-pill" style="border-left: 5px solid #28a745;">
             Total en Stock: <span id="count-stock">0</span>
           </div>
+          <div class="stat-pill" style="border-left: 5px solid #17a2b8;">
+            En Préstamo: <span id="count-prestados">0</span>
+          </div>
         </div>
 
         <div id="editing-indicator-stock" style="display:none; background:#fff3cd; padding:10px; margin-bottom:10px;">
@@ -386,7 +390,7 @@
             </div>
           </fieldset>
           <div class="form-actions">
-            <button type="button" class="secondary" onclick="abrirFirmaPrestamo()">✍️ Firma</button>
+            <button type="button" class="secondary" onclick="abrirFirmaPrestamo()">✍️ Firma Cliente</button>
             <button type="submit" class="primary" id="p-submit">Guardar Préstamo</button>
           </div>
         </form>
@@ -404,6 +408,101 @@
 
   <!-- STOCK -->
   <div id="stock-app" style="display: none;"></div>
+
+  <!-- REPARTO -->
+  <div id="reparto-app" style="display: none;">
+    <div class="container">
+      <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      <button class="secondary" onclick="showMenu()" style="float:left;">↩️ Menú</button>
+      <h1 style="clear:both; padding-top:20px;">🚚 Gestión de Reparto</h1>
+      
+      <!-- TABS -->
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #ddd;">
+        <button id="tab-crear-ruta" class="tab-btn" onclick="switchTabReparto('crear')" style="padding: 12px 25px; border: none; background: #007bff; color: white; font-weight: bold; cursor: pointer; border-radius: 8px 8px 0 0;">
+          📋 Crear Ruta
+        </button>
+        <button id="tab-repartidor" class="tab-btn" onclick="switchTabReparto('repartidor')" style="padding: 12px 25px; border: none; background: #f0f0f0; color: #666; font-weight: bold; cursor: pointer; border-radius: 8px 8px 0 0;">
+          🚚 Repartidor
+        </button>
+      </div>
+
+      <!-- SECCIÓN CREAR RUTA -->
+      <div id="seccion-crear-ruta">
+        <h2>📝 Nueva Ruta de Entrega</h2>
+        
+        <form id="form-ruta-base" style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <div><label>📅 Fecha</label><input type="date" id="ruta-fecha" required></div>
+          <div><label>🚗 Vehículo</label><input type="text" id="ruta-vehiculo" placeholder="Ej: Kia 1" required></div>
+          <div><label>🔢 Placa</label><input type="text" id="ruta-placa" placeholder="Ej: ABC-123" required></div>
+          <div><label>👥 Cantidad de Clientes</label><input type="number" id="ruta-num-clientes" min="1" max="20" placeholder="1-20" required></div>
+          <div class="form-actions">
+            <button type="button" class="primary" onclick="generarFormularioClientes()">➡️ Siguiente</button>
+          </div>
+        </form>
+
+        <div id="formulario-clientes" style="display: none;">
+          <h3>📋 Detalle de Entregas</h3>
+          <div id="clientes-container"></div>
+          <div style="margin-top: 20px; text-align: right;">
+            <button class="secondary" onclick="cancelarRuta()">❌ Cancelar</button>
+            <button class="primary" onclick="guardarRuta()">💾 Guardar Ruta</button>
+          </div>
+        </div>
+
+        <h3 style="margin-top: 40px;">📊 Rutas Programadas Hoy</h3>
+        <div id="rutas-hoy-container"></div>
+      </div>
+
+      <!-- SECCIÓN REPARTIDOR -->
+      <div id="seccion-repartidor" style="display: none;">
+        <h2>🚚 Panel del Repartidor</h2>
+        
+        <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <label style="font-weight: bold; font-size: 1.1rem;">🚗 Selecciona tu vehículo:</label>
+          <select id="select-vehiculo-repartidor" style="width: 100%; padding: 12px; margin-top: 10px; font-size: 1rem; border: 2px solid #007bff; border-radius: 8px;" onchange="mostrarFormularioEquipo()">
+            <option value="">-- Seleccionar vehículo --</option>
+          </select>
+        </div>
+
+        <div id="form-equipo-trabajo" style="display: none; background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+          <h3 style="margin-top: 0;">👥 Datos del Equipo de Trabajo</h3>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div>
+              <label style="font-weight: bold; display: block; margin-bottom: 5px;">👨‍✈️ Nombre del Chofer:</label>
+              <input type="text" id="nombre-chofer" placeholder="Ej: Juan Pérez" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required>
+            </div>
+            <div>
+              <label style="font-weight: bold; display: block; margin-bottom: 5px;">👷 Nombre del Ayudante:</label>
+              <input type="text" id="nombre-ayudante" placeholder="Ej: Carlos López" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;" required>
+            </div>
+          </div>
+          <button class="primary" onclick="confirmarEquipoYCargarRuta()" style="margin-top: 15px; width: 100%;">✅ Confirmar e Iniciar Ruta</button>
+        </div>
+
+        <div id="ruta-repartidor-container" style="display: none;">
+          <div class="header-info-equipo" style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);">
+            <div>
+              <h2 id="ruta-vehiculo-nombre" style="margin:0;"></h2>
+              <p id="ruta-fecha-info" style="margin:0; opacity:0.9;"></p>
+              <p id="ruta-equipo-info" style="margin:5px 0 0 0; opacity:0.9; font-size: 0.95rem;"></p>
+            </div>
+            <button class="primary" onclick="finalizarRuta()" style="background:#28a745;">✅ Finalizar Ruta</button>
+          </div>
+
+          <div id="entregas-container"></div>
+        </div>
+
+        <h3 style="margin-top: 40px;">📜 Historial de Entregas</h3>
+        <button class="primary" onclick="exportarHistorialDia()" style="margin-bottom: 15px;">📥 Exportar Hoy a Excel</button>
+        <div style="overflow-x: auto;">
+          <table id="tabla-historial-reparto">
+            <thead><tr><th>Fecha</th><th>Vehículo</th><th>Chofer</th><th>Total Clientes</th><th>Entregados</th><th>Bidones</th><th>Acciones</th></tr></thead>
+            <tbody id="tabla-historial-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- PLANTA -->
   <div id="plant-app" style="display: none;" class="container">
@@ -473,11 +572,16 @@
     const colPlantaEquipos = db.collection("planta_maestro");
     const colPlantaHistorial = db.collection("planta_historial");
     const colStock = db.collection("stock");
+    const colRutas = db.collection("rutas");
+    const colHistorialReparto = db.collection("historial_reparto");
 
     let currentUser = null;
     let currentSignature = null;
     let currentSignaturePrestamo = null;
-    let allData = { mant: [], prest: [], planta: [], stock: [] };
+    let allData = { mant: [], prest: [], planta: [], stock: [], rutas: [] };
+    let currentRutaId = null;
+    let editandoRuta = false;
+    let rutaIdEditar = null;
 
     function hideAll() {
       document.getElementById('login-screen').style.display='none';
@@ -487,6 +591,7 @@
       document.getElementById('loan-app').style.display='none';
       document.getElementById('plant-app').style.display='none';
       document.getElementById('alerts-app').style.display='none';
+      document.getElementById('reparto-app').style.display='none';
     }
     function showMenu() { hideAll(); document.getElementById('main-menu').style.display='block'; }
     function showDashboard() { hideAll(); document.getElementById('dashboard-app').style.display='block'; updateDashboard(); }
@@ -494,6 +599,7 @@
     function showLoans() { hideAll(); document.getElementById('loan-app').style.display='block'; switchTab('stock'); actualizarSelectStock(); }
     function showPlant() { hideAll(); document.getElementById('plant-app').style.display='block'; backToPlantMaster(); }
     function showAlerts() { hideAll(); document.getElementById('alerts-app').style.display='block'; updateAlerts(); }
+    function showReparto() { hideAll(); document.getElementById('reparto-app').style.display='block'; switchTabReparto('crear'); initReparto(); }
     function logout() { auth.signOut(); }
 
     // Sistema de tabs
@@ -531,6 +637,7 @@
         initPlant();
         initStock();
         initMainSearch();
+        limpiarHistorialAntiguo();
         showMenu(); 
       } else { 
         hideAll(); 
@@ -1156,7 +1263,7 @@
         const f = data.filter(i => i.codigo.toLowerCase().includes(t) || i.modelo.toLowerCase().includes(t));
         
         table.innerHTML = f.map(i => {
-          const accs = ['embudo','pinza','rejilla','canoCaliente','canoTiempo','canoFria','tapaSuperior','tapaFrontal','tapaLateral']
+          const accs = ['embudo','pinza','rejilla','canoCaliente','canoTiempo','canoFria','tapaSuperior','tapaFrontal','tapaLateral','empaque']
             .filter(a => i[a])
             .map(a => a.replace('cano','Caño ').replace('tapa','Tapa '))
             .join(', ');
@@ -1200,6 +1307,7 @@
           tapaSuperior: document.getElementById('s-acc-tapa-superior').checked,
           tapaFrontal: document.getElementById('s-acc-tapa-frontal').checked,
           tapaLateral: document.getElementById('s-acc-tapa-lateral').checked,
+          empaque: document.getElementById('s-acc-empaque').checked,
           enPrestamo: false,
           usuarioCreacion: currentUser.email,
           fechaCreacion: new Date().toISOString()
@@ -1237,6 +1345,7 @@
         document.getElementById('s-acc-tapa-superior').checked = i.tapaSuperior || false;
         document.getElementById('s-acc-tapa-frontal').checked = i.tapaFrontal || false;
         document.getElementById('s-acc-tapa-lateral').checked = i.tapaLateral || false;
+        document.getElementById('s-acc-empaque').checked = i.empaque || false;
         editId=id;
         document.getElementById('editing-indicator-stock').style.display='block';
       };
@@ -1423,7 +1532,7 @@
         doc.text("ESTADO", 120, y);
         y += 8;
         doc.setFont("helvetica", "normal");
-        ['Embudo','Pinza','Rejilla','Caño Caliente','Caño Tiempo','Caño Fria','Tapa Superior','Tapa Frontal','Tapas Laterales'].forEach(a => {
+        ['Embudo','Pinza','Rejilla','Caño Caliente','Caño Tiempo','Caño Fria','Tapa Superior','Tapa Frontal','Tapas Laterales','Empaque'].forEach(a => {
            let key = a.charAt(0).toLowerCase() + a.slice(1).replace(' ', '').replace('ñ','no').replace('Tapas','Tapa');
            if(key === 'tapaFria') key = 'canoFria';
            doc.text(a, 30, y);
@@ -1584,6 +1693,522 @@
         doc.save(`Historial_${curEqData.codigo}.pdf`);
       });
     };
+
+    // ===== REPARTO =====
+    function switchTabReparto(tab) {
+      if(tab === 'crear') {
+        document.getElementById('seccion-crear-ruta').style.display = 'block';
+        document.getElementById('seccion-repartidor').style.display = 'none';
+        document.getElementById('tab-crear-ruta').style.background = '#007bff';
+        document.getElementById('tab-crear-ruta').style.color = 'white';
+        document.getElementById('tab-repartidor').style.background = '#f0f0f0';
+        document.getElementById('tab-repartidor').style.color = '#666';
+        cargarRutasHoy();
+      } else {
+        document.getElementById('seccion-crear-ruta').style.display = 'none';
+        document.getElementById('seccion-repartidor').style.display = 'block';
+        document.getElementById('tab-crear-ruta').style.background = '#f0f0f0';
+        document.getElementById('tab-crear-ruta').style.color = '#666';
+        document.getElementById('tab-repartidor').style.background = '#007bff';
+        document.getElementById('tab-repartidor').style.color = 'white';
+        cargarVehiculosHoy();
+        // 1. Función para mostrar el formulario del equipo al elegir vehículo
+window.mostrarFormularioEquipo = () => {
+  const rutaId = document.getElementById('select-vehiculo-repartidor').value;
+  const formEquipo = document.getElementById('form-equipo-trabajo');
+  
+  if (rutaId) {
+    formEquipo.style.display = 'block';
+    // Limpiamos los nombres anteriores por si acaso
+    document.getElementById('nombre-chofer').value = '';
+    document.getElementById('nombre-ayudante').value = '';
+  } else {
+    formEquipo.style.display = 'none';
+    document.getElementById('ruta-repartidor-container').style.display = 'none';
+  }
+};
+
+// 2. Función para confirmar el equipo y desbloquear la ruta
+window.confirmarEquipoYCargarRuta = async () => {
+  const rutaId = document.getElementById('select-vehiculo-repartidor').value;
+  const chofer = document.getElementById('nombre-chofer').value.trim();
+  const ayudante = document.getElementById('nombre-ayudante').value.trim();
+
+  if (!chofer || !ayudante) {
+    alert('⚠️ Por favor ingresa el nombre del chofer y del ayudante.');
+    return;
+  }
+
+  try {
+    // Actualizamos la ruta en Firebase con los nombres del equipo
+    await colRutas.doc(rutaId).update({
+      chofer: chofer,
+      ayudante: ayudante
+    });
+
+    // Guardamos info del equipo en el texto de la interfaz
+    document.getElementById('ruta-equipo-info').textContent = `👨‍✈️ Chofer: ${chofer} | 👷 Ayudante: ${ayudante}`;
+    
+    // Ocultamos el formulario de ingreso y mostramos la ruta
+    document.getElementById('form-equipo-trabajo').style.display = 'none';
+    cargarRutaRepartidor(); // Esta función ya la tienes definida
+    
+  } catch (error) {
+    console.error("Error al actualizar equipo:", error);
+    alert('❌ Error al conectar con la base de datos.');
+  }
+};
+        cargarHistorialReparto();
+      }
+    }
+
+    function initReparto() {
+      document.getElementById('ruta-fecha').valueAsDate = new Date();
+      cargarRutasHoy();
+    }
+
+    function generarFormularioClientes() {
+      const numClientes = parseInt(document.getElementById('ruta-num-clientes').value);
+      if(!numClientes || numClientes < 1 || numClientes > 20) {
+        alert('Por favor ingresa un número válido de clientes (1-20)');
+        return;
+      }
+
+      const container = document.getElementById('clientes-container');
+      container.innerHTML = '';
+
+      for(let i = 1; i <= numClientes; i++) {
+        container.innerHTML += `
+          <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #007bff;">
+            <h4 style="margin-top: 0; color: #007bff;">👤 Cliente ${i}</h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+              <div>
+                <label style="font-weight: bold;">Nombre Empresa:</label>
+                <input type="text" class="cliente-nombre" data-num="${i}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required>
+              </div>
+              <div>
+                <label style="font-weight: bold;">Estado de Pago:</label>
+                <select class="cliente-pago" data-num="${i}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                  <option value="pagado">✅ Ya Pagó</option>
+                  <option value="pendiente">⏳ Falta Pagar</option>
+                </select>
+              </div>
+              <div style="grid-column: 1 / -1;">
+                <label style="font-weight: bold;">📍 Link de Dirección (Google Maps):</label>
+                <input type="url" class="cliente-direccion" data-num="${i}" placeholder="https://maps.google.com/..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+              </div>
+              <div>
+                <label style="font-weight: bold;">Cantidad de Bidones:</label>
+                <input type="number" class="cliente-bidones" data-num="${i}" min="1" value="1" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" required>
+              </div>
+              <div>
+                <label style="font-weight: bold;">Tipo de Bidón:</label>
+                <select class="cliente-tipo-bidon" data-num="${i}" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                  <option>PEAT</option>
+                  <option>A</option>
+                  <option>NUEVOS</option>
+                  <option>C</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      document.getElementById('formulario-clientes').style.display = 'block';
+      document.getElementById('form-ruta-base').style.display = 'none';
+    }
+
+    function cancelarRuta() {
+      document.getElementById('form-ruta-base').reset();
+      document.getElementById('ruta-fecha').valueAsDate = new Date();
+      document.getElementById('formulario-clientes').style.display = 'none';
+      document.getElementById('form-ruta-base').style.display = 'grid';
+      editandoRuta = false;
+      rutaIdEditar = null;
+    }
+
+    async function guardarRuta() {
+      const fecha = document.getElementById('ruta-fecha').value;
+      const vehiculo = document.getElementById('ruta-vehiculo').value;
+      const placa = document.getElementById('ruta-placa').value;
+      const numClientes = parseInt(document.getElementById('ruta-num-clientes').value);
+
+      const clientes = [];
+      for(let i = 1; i <= numClientes; i++) {
+        const nombre = document.querySelector(`.cliente-nombre[data-num="${i}"]`).value;
+        const pago = document.querySelector(`.cliente-pago[data-num="${i}"]`).value;
+        const direccion = document.querySelector(`.cliente-direccion[data-num="${i}"]`).value;
+        const bidones = parseInt(document.querySelector(`.cliente-bidones[data-num="${i}"]`).value);
+        const tipoBidon = document.querySelector(`.cliente-tipo-bidon[data-num="${i}"]`).value;
+
+        if(!nombre) {
+          alert(`Por favor completa el nombre del Cliente ${i}`);
+          return;
+        }
+
+        clientes.push({
+          numero: i,
+          nombre,
+          estadoPago: pago,
+          direccion,
+          cantidadBidones: bidones,
+          tipoBidon,
+          entregado: false,
+          bidonesVaciosRecibidos: 0,
+          observaciones: ''
+        });
+      }
+
+      const ruta = {
+        fecha,
+        vehiculo,
+        placa,
+        clientes,
+        finalizada: false,
+        chofer: '',
+        ayudante: '',
+        usuarioCreacion: currentUser.email,
+        fechaCreacion: new Date().toISOString()
+      };
+
+      if(editandoRuta && rutaIdEditar) {
+        await colRutas.doc(rutaIdEditar).update(ruta);
+        alert('✅ Ruta actualizada exitosamente');
+      } else {
+        await colRutas.add(ruta);
+        alert('✅ Ruta creada exitosamente');
+      }
+      
+      cancelarRuta();
+      cargarRutasHoy();
+    }
+
+    function cargarRutasHoy() {
+      const hoy = new Date().toISOString().split('T')[0];
+      colRutas.where('fecha', '==', hoy).where('finalizada', '==', false).onSnapshot(snap => {
+        const container = document.getElementById('rutas-hoy-container');
+        if(snap.empty) {
+          container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No hay rutas programadas para hoy</p>';
+          return;
+        }
+
+        container.innerHTML = '';
+        snap.forEach(doc => {
+          const r = doc.data();
+          container.innerHTML += `
+            <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #28a745;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong style="font-size: 1.1rem;">🚗 ${r.vehiculo}</strong> - ${r.placa}
+                  <div style="color: #666; margin-top: 5px;">📦 ${r.clientes.length} clientes asignados</div>
+                  ${r.chofer ? `<div style="color: #007bff; margin-top: 3px; font-size: 0.9rem;">👨‍✈️ ${r.chofer} | 👷 ${r.ayudante}</div>` : ''}
+                </div>
+                <div>
+                  <button class="edit" onclick="editarRuta('${doc.id}')" style="margin-right: 5px;">✏️ Editar</button>
+                  <button class="delete" onclick="eliminarRuta('${doc.id}')">🗑️</button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      });
+    }
+
+    function editarRuta(id) {
+      colRutas.doc(id).get().then(doc => {
+        const r = doc.data();
+        
+        document.getElementById('ruta-fecha').value = r.fecha;
+        document.getElementById('ruta-vehiculo').value = r.vehiculo;
+        document.getElementById('ruta-placa').value = r.placa;
+        document.getElementById('ruta-num-clientes').value = r.clientes.length;
+        
+        editandoRuta = true;
+        rutaIdEditar = id;
+        
+        generarFormularioClientes();
+        
+        setTimeout(() => {
+          r.clientes.forEach((c, i) => {
+            const num = i + 1;
+            document.querySelector(`.cliente-nombre[data-num="${num}"]`).value = c.nombre;
+            document.querySelector(`.cliente-pago[data-num="${num}"]`).value = c.estadoPago;
+            document.querySelector(`.cliente-direccion[data-num="${num}"]`).value = c.direccion || '';
+            document.querySelector(`.cliente-bidones[data-num="${num}"]`).value = c.cantidadBidones;
+            document.querySelector(`.cliente-tipo-bidon[data-num="${num}"]`).value = c.tipoBidon;
+          });
+        }, 100);
+      });
+    }
+
+    function eliminarRuta(id) {
+      if(confirm('¿Eliminar esta ruta?')) {
+        colRutas.doc(id).delete();
+      }
+    }
+
+    function cargarVehiculosHoy() {
+      const hoy = new Date().toISOString().split('T')[0];
+      colRutas.where('fecha', '==', hoy).where('finalizada', '==', false).get().then(snap => {
+        const select = document.getElementById('select-vehiculo-repartidor');
+        select.innerHTML = '<option value="">-- Seleccionar vehículo --</option>';
+        snap.forEach(doc => {
+          const r = doc.data();
+          select.innerHTML += `<option value="${doc.id}">${r.vehiculo} - ${r.placa}</option>`;
+        });
+      });
+    }
+
+    function cargarRutaRepartidor() {
+      const rutaId = document.getElementById('select-vehiculo-repartidor').value;
+      if(!rutaId) {
+        document.getElementById('ruta-repartidor-container').style.display = 'none';
+        return;
+      }
+
+      currentRutaId = rutaId;
+      colRutas.doc(rutaId).onSnapshot(doc => {
+        if(!doc.exists) return;
+        const ruta = doc.data();
+        
+        document.getElementById('ruta-vehiculo-nombre').textContent = `${ruta.vehiculo} - ${ruta.placa}`;
+        document.getElementById('ruta-fecha-info').textContent = `📅 ${formatDate(ruta.fecha)} | ${ruta.clientes.length} clientes`;
+        document.getElementById('ruta-repartidor-container').style.display = 'block';
+
+        const container = document.getElementById('entregas-container');
+        container.innerHTML = '';
+
+        ruta.clientes.forEach((cliente, idx) => {
+          const bgColor = cliente.entregado ? '#d4edda' : '#fff';
+          const borderColor = cliente.entregado ? '#28a745' : '#007bff';
+
+          container.innerHTML += `
+            <div style="background: ${bgColor}; padding: 20px; border-radius: 8px; margin-bottom: 15px; border-left: 5px solid ${borderColor};">
+              <div style="display: flex; justify-content: space-between; align-items: start;">
+                <div style="flex: 1;">
+                  <h3 style="margin: 0 0 10px 0; color: ${borderColor};">
+                    ${cliente.entregado ? '✅' : '📦'} Cliente ${cliente.numero}: ${cliente.nombre}
+                  </h3>
+                  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                    <div><strong>💰 Pago:</strong> ${cliente.estadoPago === 'pagado' ? '✅ Pagado' : '⏳ Pendiente'}</div>
+                    <div><strong>📦 Bidones:</strong> ${cliente.cantidadBidones} x ${cliente.tipoBidon}</div>
+                  </div>
+                  ${cliente.direccion ? `<div style="margin-bottom: 10px;"><a href="${cliente.direccion}" target="_blank" style="color: #007bff; text-decoration: none;">📍 Ver en Google Maps →</a></div>` : ''}
+                  
+                  ${!cliente.entregado ? `
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+                      <div>
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Bidones Vacíos Recibidos:</label>
+                        <input type="number" id="vacios-${idx}" min="0" value="0" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                      </div>
+                      <div>
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">Observaciones:</label>
+                        <input type="text" id="obs-${idx}" placeholder="Opcional..." style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                      </div>
+                    </div>
+                    <button class="primary" onclick="marcarEntregado(${idx})" style="margin-top: 10px; width: 100%;">✅ Marcar como Entregado</button>
+                  ` : `
+                    <div style="background: rgba(40,167,69,0.1); padding: 10px; border-radius: 4px; margin-top: 10px;">
+                      <div><strong>Bidones vacíos recibidos:</strong> ${cliente.bidonesVaciosRecibidos}</div>
+                      ${cliente.observaciones ? `<div><strong>Observaciones:</strong> ${cliente.observaciones}</div>` : ''}
+                    </div>
+                  `}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      });
+    }
+
+    async function marcarEntregado(idx) {
+      const vacios = parseInt(document.getElementById(`vacios-${idx}`).value) || 0;
+      const obs = document.getElementById(`obs-${idx}`).value;
+
+      const doc = await colRutas.doc(currentRutaId).get();
+      const ruta = doc.data();
+      ruta.clientes[idx].entregado = true;
+      ruta.clientes[idx].bidonesVaciosRecibidos = vacios;
+      ruta.clientes[idx].observaciones = obs;
+      ruta.clientes[idx].horaEntrega = new Date().toISOString();
+
+      await colRutas.doc(currentRutaId).update({ clientes: ruta.clientes });
+      alert('✅ Entrega registrada correctamente');
+    }
+
+    async function finalizarRuta() {
+      const doc = await colRutas.doc(currentRutaId).get();
+      const ruta = doc.data();
+      
+      const pendientes = ruta.clientes.filter(c => !c.entregado).length;
+      if(pendientes > 0) {
+        if(!confirm(`Aún tienes ${pendientes} entregas pendientes. ¿Deseas finalizar de todas formas?`)) {
+          return;
+        }
+      }
+
+      // Guardar en historial
+      const historial = {
+        fecha: ruta.fecha,
+        vehiculo: ruta.vehiculo,
+        placa: ruta.placa,
+        chofer: ruta.chofer,
+        ayudante: ruta.ayudante,
+        totalClientes: ruta.clientes.length,
+        entregados: ruta.clientes.filter(c => c.entregado).length,
+        totalBidones: ruta.clientes.reduce((sum, c) => sum + (c.entregado ? c.cantidadBidones : 0), 0),
+        totalVaciosRecibidos: ruta.clientes.reduce((sum, c) => sum + c.bidonesVaciosRecibidos, 0),
+        clientes: ruta.clientes,
+        fechaFinalizacion: new Date().toISOString()
+      };
+
+      await colHistorialReparto.add(historial);
+      await colRutas.doc(currentRutaId).update({ finalizada: true });
+      
+      alert('✅ Ruta finalizada correctamente');
+      document.getElementById('select-vehiculo-repartidor').value = '';
+      document.getElementById('ruta-repartidor-container').style.display = 'none';
+      cargarVehiculosHoy();
+      cargarHistorialReparto();
+    }
+
+    function cargarHistorialReparto() {
+      colHistorialReparto.orderBy('fecha', 'desc').limit(30).onSnapshot(snap => {
+        const tbody = document.getElementById('tabla-historial-body');
+        tbody.innerHTML = '';
+        
+        snap.forEach(doc => {
+          const h = doc.data();
+          tbody.innerHTML += `
+            <tr>
+              <td><strong>${formatDate(h.fecha)}</strong></td>
+              <td>${h.vehiculo} - ${h.placa}</td>
+              <td>${h.chofer || 'N/A'}</td>
+              <td>${h.totalClientes}</td>
+              <td>${h.entregados}</td>
+              <td>${h.totalBidones} llenos / ${h.totalVaciosRecibidos} vacíos</td>
+              <td>
+                <button class="report" onclick="verDetalleHistorial('${doc.id}')">👁️ Ver</button>
+                <button class="primary" onclick="exportarRutaPDF('${doc.id}')">📄 PDF</button>
+              </td>
+            </tr>
+          `;
+        });
+      });
+    }
+
+    function verDetalleHistorial(id) {
+      colHistorialReparto.doc(id).get().then(doc => {
+        const h = doc.data();
+        let detalle = `📋 DETALLE DE RUTA\n\n`;
+        detalle += `📅 Fecha: ${formatDate(h.fecha)}\n`;
+        detalle += `🚗 Vehículo: ${h.vehiculo} - ${h.placa}\n`;
+        detalle += `👨‍✈️ Chofer: ${h.chofer || 'N/A'}\n`;
+        detalle += `👷 Ayudante: ${h.ayudante || 'N/A'}\n`;
+        detalle += `📊 Clientes: ${h.entregados}/${h.totalClientes} entregados\n\n`;
+        detalle += `─────────────────────────\n\n`;
+        
+        h.clientes.forEach(c => {
+          detalle += `${c.entregado ? '✅' : '❌'} Cliente ${c.numero}: ${c.nombre}\n`;
+          detalle += `   💰 ${c.estadoPago === 'pagado' ? 'Pagado' : 'Pendiente'}\n`;
+          detalle += `   📦 ${c.cantidadBidones} x ${c.tipoBidon}\n`;
+          if(c.entregado) {
+            detalle += `   🔄 Vacíos recibidos: ${c.bidonesVaciosRecibidos}\n`;
+            if(c.observaciones) detalle += `   📝 ${c.observaciones}\n`;
+          }
+          detalle += `\n`;
+        });
+
+        alert(detalle);
+      });
+    }
+
+    function exportarHistorialDia() {
+      const hoy = new Date().toISOString().split('T')[0];
+      colHistorialReparto.where('fecha', '==', hoy).get().then(snap => {
+        if(snap.empty) {
+          alert('No hay entregas registradas para hoy');
+          return;
+        }
+
+        const data = [];
+        snap.forEach(doc => {
+          const h = doc.data();
+          h.clientes.forEach(c => {
+            data.push({
+              Fecha: formatDate(h.fecha),
+              Vehículo: h.vehiculo,
+              Placa: h.placa,
+              Chofer: h.chofer || '',
+              Ayudante: h.ayudante || '',
+              Cliente: c.nombre,
+              'Estado Pago': c.estadoPago,
+              'Bidones Entregados': c.entregado ? c.cantidadBidones : 0,
+              'Tipo Bidón': c.tipoBidon,
+              'Vacíos Recibidos': c.bidonesVaciosRecibidos,
+              Entregado: c.entregado ? 'Sí' : 'No',
+              Observaciones: c.observaciones || ''
+            });
+          });
+        });
+
+        const ws = XLSX.utils.json_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Reparto_Hoy");
+        XLSX.writeFile(wb, `Reparto_${hoy}.xlsx`);
+      });
+    }
+
+    function exportarRutaPDF(id) {
+      colHistorialReparto.doc(id).get().then(doc => {
+        const h = doc.data();
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        
+        pdf.setFontSize(18); pdf.setFont("helvetica", "bold");
+        pdf.text('REPORTE DE RUTA', 105, 20, { align: 'center' });
+        pdf.setLineWidth(0.5); pdf.line(20, 25, 190, 25);
+        
+        pdf.setFontSize(12);
+        let y = 35;
+        pdf.setFont("helvetica", "bold");
+        pdf.text(`Fecha: ${formatDate(h.fecha)}`, 20, y);
+        pdf.text(`Vehículo: ${h.vehiculo} - ${h.placa}`, 20, y + 7);
+        pdf.text(`Chofer: ${h.chofer || 'N/A'}`, 20, y + 14);
+        pdf.text(`Ayudante: ${h.ayudante || 'N/A'}`, 20, y + 21);
+        pdf.text(`Entregados: ${h.entregados}/${h.totalClientes}`, 20, y + 28);
+        
+        y += 40;
+        pdf.setFont("helvetica", "normal");
+        
+        h.clientes.forEach(c => {
+          if(y > 260) { pdf.addPage(); y = 20; }
+          pdf.setFont("helvetica", "bold");
+          pdf.text(`${c.entregado ? '✓' : '✗'} ${c.nombre}`, 20, y);
+          pdf.setFont("helvetica", "normal");
+          pdf.text(`${c.cantidadBidones} x ${c.tipoBidon} | ${c.estadoPago}`, 30, y + 6);
+          if(c.entregado) {
+            pdf.text(`Vacíos: ${c.bidonesVaciosRecibidos}`, 30, y + 12);
+          }
+          y += 20;
+        });
+        
+        pdf.save(`Ruta_${formatDate(h.fecha)}_${h.vehiculo}.pdf`);
+      });
+    }
+
+    // Limpiar historial mayor a 8 meses
+    function limpiarHistorialAntiguo() {
+      const hace8Meses = new Date();
+      hace8Meses.setMonth(hace8Meses.getMonth() - 8);
+      const fechaLimite = hace8Meses.toISOString().split('T')[0];
+
+      colHistorialReparto.where('fecha', '<', fechaLimite).get().then(snap => {
+        snap.forEach(doc => doc.ref.delete());
+        if(!snap.empty) console.log(`🗑️ Limpiados ${snap.size} registros antiguos de reparto`);
+      });
+    }
   </script>
 </body>
 </html>
